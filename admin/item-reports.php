@@ -35,10 +35,27 @@ if ( ! class_exists( 'GADWP_Backend_Item_Reports' ) ) {
 			}
 		}
 
+		private function post_type_is_blacklisted()
+		{
+			$post_type = get_post_type();
+
+			if ( ! $post_type ) {
+				return false;
+			}
+
+			// post types to NOT show the "Analytics" column on
+			$blacklist_post_types = [];
+
+			// allow plugins/themes to add post types to the blacklist
+			$blacklist_post_types = apply_filters( 'gadwp_post_types_blacklist', $blacklist_post_types );
+
+			return in_array( $post_type, $blacklist_post_types );
+		}
+
 		public function add_icons( $column, $id ) {
 			global $wp_version;
 
-			if ( 'gadwp_stats' != $column ) {
+			if ( 'gadwp_stats' != $column || $this->post_type_is_blacklisted() ) {
 				return;
 			}
 
@@ -50,6 +67,10 @@ if ( ! class_exists( 'GADWP_Backend_Item_Reports' ) ) {
 		}
 
 		public function add_columns( $columns ) {
+			if ( $this->post_type_is_blacklisted() ) {
+				return $columns;
+			}
+
 			return array_merge( $columns, array( 'gadwp_stats' => __( 'Analytics', 'google-analytics-dashboard-for-wp' ) ) );
 		}
 	}

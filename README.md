@@ -45,6 +45,7 @@ Hooks
   - gadwp_gtag_script_path
   - gadwp_maps_api_key
   - gadwp_curl_options
+  - gadwp_post_types_blacklist
 
 * Actions
 
